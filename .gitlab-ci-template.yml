@@ -1,6 +1,6 @@
 variables:
   MAVEN_HOME: 'C:\\Users\\HP\\Downloads\\apache-maven-3.9.6'
-  MAVEN_CLI_OPTS: "-s $CI_PROJECT_DIR/ci-settings.xml"
+ 
 # Define stages
 stages:
   - build
@@ -68,15 +68,15 @@ stages:
     - |
       if ($env:CI_COMMIT_REF_NAME -match "^release/") {
        
-        mvn $env:MAVEN_CLI_OPTS clean package -DpackageScope=_${env:CI_PIPELINE_ID}_RELEASE -DskipTests | Tee-Object -FilePath build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_${env:CI_PIPELINE_ID}_RELEASE -DskipTests | Tee-Object -FilePath build.log
       }
       elseif ($env:CI_COMMIT_REF_NAME -eq "dev" -or $env:CI_COMMIT_REF_NAME -eq "hotfox") {
         
-        mvn $env:MAVEN_CLI_OPTS clean package -DpackageScope=_${env:CI_PIPELINE_ID}_DRAFT -DskipTests | Tee-Object -FilePath build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_${env:CI_PIPELINE_ID}_DRAFT -DskipTests | Tee-Object -FilePath build.log
       }
       else {
         
-        mvn $env:MAVEN_CLI_OPTS clean package -DpackageScope=_${env:CI_PIPELINE_ID}_Build_Ordinaire -DskipTests | Tee-Object -FilePath build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_${env:CI_PIPELINE_ID}_Build_Ordinaire -DskipTests | Tee-Object -FilePath build.log
       }
 
     
