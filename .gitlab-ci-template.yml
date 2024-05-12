@@ -66,17 +66,17 @@ stages:
   stage: build
   script:
     - |
-      if ($env:CI_COMMIT_REF_NAME -match "^release/") {
+      if ($CI_COMMIT_REF_NAME -match "^release/") {
        
-        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_${env:CI_PIPELINE_ID}_RELEASE -DskipTests | Tee-Object -FilePath build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_$CI_PIPELINE_ID_RELEASE -DskipTests | tee build.log
       }
       elseif ($env:CI_COMMIT_REF_NAME -eq "dev" -or $env:CI_COMMIT_REF_NAME -eq "hotfox") {
         
-        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_${env:CI_PIPELINE_ID}_DRAFT -DskipTests | Tee-Object -FilePath build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_$CI_PIPELINE_ID_DRAFT -DskipTests | tee build.log
       }
       else {
         
-        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_${env:CI_PIPELINE_ID}_Build_Ordinaire -DskipTests | Tee-Object -FilePath build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_$CI_PIPELINE_ID_Build_Ordinaire -DskipTests | tee build.log
       }
 
     
