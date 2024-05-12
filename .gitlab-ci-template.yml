@@ -70,7 +70,7 @@ stages:
        
         mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_$CI_PIPELINE_ID_RELEASE -DskipTests | tee build.log
       }
-      elseif ($env:CI_COMMIT_REF_NAME -eq "dev" -or $env:CI_COMMIT_REF_NAME -eq "hotfox") {
+      elseif ($CI_COMMIT_REF_NAME -eq "Develop" -or $env:CI_COMMIT_REF_NAME -eq "hotfox") {
         
         mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DpackageScope=_$CI_PIPELINE_ID_DRAFT -DskipTests | tee build.log
       }
