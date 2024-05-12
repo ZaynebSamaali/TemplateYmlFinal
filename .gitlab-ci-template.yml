@@ -68,15 +68,15 @@ stages:
     - |
       if ($CI_COMMIT_REF_NAME -match "^release/") {
        
-        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -D"packageScope=$($env:CI_PIPELINE_ID)_DRAFT"-DskipTests | tee build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -D"packageScope=$($env:CI_PIPELINE_ID)_DRAFT" -DskipTests | tee build.log
       }
       elseif ($CI_COMMIT_REF_NAME -eq "Develop" -or $env:CI_COMMIT_REF_NAME -eq "hotfox") {
         
-        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -D"packageScope=$($env:CI_PIPELINE_ID)_DRAFT"-DskipTests | tee build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -D"packageScope=$($env:CI_PIPELINE_ID)_DRAFT" -DskipTests | tee build.log
       }
       else {
         
-        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -D"packageScope=$($env:CI_PIPELINE_ID)_DRAFT" -DskipTests | tee build.log
+        mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -D"packageScope=$($env:CI_PIPELINE_ID)_DRAFT"  -DskipTests | tee build.log
       }
 
     
