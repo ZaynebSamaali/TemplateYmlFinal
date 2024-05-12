@@ -63,19 +63,22 @@ stages:
     - mvn -v
 
 .build_job:
-  
   stage: build
   script:
-    -|
-        if ($env:CI_COMMIT_REF_NAME -match "^release/"){
-          echo "Building release version."
-          mvn $MAVEN_CLI_OPTS clean package -DpackageScope=_${CI_PIPELINE_ID}_RELEASE -DskipTests | tee build.log}
-        elseif ($env:CI_COMMIT_REF_NAME -eq "dev" -or $env:CI_COMMIT_REF_NAME -eq "hotfix"){
-          echo "Building draft version."
-          mvn $MAVEN_CLI_OPTS clean package -DpackageScope=_${CI_PIPELINE_ID}_DRAFT -DskipTests | tee build.log}
-       else{
-          echo "Building default version."
-          mvn $MAVEN_CLI_OPTS clean package  -DpackageScope=_${CI_PIPELINE_ID}_Build_Ordinaire -DskipTests | tee build.log}
+    - |
+      if ($env:CI_COMMIT_REF_NAME -match "^release/") {
+       
+        mvn $env:MAVEN_CLI_OPTS clean package -DpackageScope=_${env:CI_PIPELINE_ID}_RELEASE -DskipTests | Tee-Object -FilePath build.log
+      }
+      elseif ($env:CI_COMMIT_REF_NAME -eq "dev" -or $env:CI_COMMIT_REF_NAME -eq "hotfox") {
+        
+        mvn $env:MAVEN_CLI_OPTS clean package -DpackageScope=_${env:CI_PIPELINE_ID}_DRAFT -DskipTests | Tee-Object -FilePath build.log
+      }
+      else {
+        
+        mvn $env:MAVEN_CLI_OPTS clean package -DpackageScope=_${env:CI_PIPELINE_ID}_Build_Ordinaire -DskipTests | Tee-Object -FilePath build.log
+      }
+
     
     
   artifacts:
@@ -123,8 +126,7 @@ stages:
   stage: deploy
   script:
     - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean deploy -X -DmuleDeploy -Denv=Dev -DskipTests | tee deploy.log
-  only:
-    - Develop
+  
   
   artifacts:
     paths:
@@ -137,8 +139,7 @@ stages:
   stage: deploy
   script:
     - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean deploy -X -DmuleDeploy -Denv=Staging -DskipTests | tee deploy.log
-  only:
-    - Staging
+  
 
   artifacts:
     paths:
@@ -152,8 +153,7 @@ stages:
   stage: deploy
   script:
     - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean deploy -X -DmuleDeploy -Denv=Product -DskipTests | tee deploy.log
-  only:
-    - main 
+  
   artifacts:
     paths:
       - deploy.log
