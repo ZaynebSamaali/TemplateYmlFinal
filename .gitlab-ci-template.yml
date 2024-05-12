@@ -1,6 +1,6 @@
 variables:
   MAVEN_HOME: 'C:\\Users\\HP\\Downloads\\apache-maven-3.9.6'
-
+  MAVEN_CLI_OPTS: "-s $CI_PROJECT_DIR/ci-settings.xml"
 # Define stages
 stages:
   - build
@@ -66,7 +66,18 @@ stages:
   
   stage: build
   script:
-    - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean package -DskipTests | tee build.log
+    -|
+        if ($env:CI_COMMIT_REF_NAME -match "^release/"){
+          echo "Building release version."
+          mvn $MAVEN_CLI_OPTS clean package -DpackageScope=_${CI_PIPELINE_ID}_RELEASE -DskipTests | tee build.log}
+        elseif ($env:CI_COMMIT_REF_NAME -eq "dev" -or $env:CI_COMMIT_REF_NAME -eq "hotfix"){
+          echo "Building draft version."
+          mvn $MAVEN_CLI_OPTS clean package -DpackageScope=_${CI_PIPELINE_ID}_DRAFT -DskipTests | tee build.log}
+       else{
+          echo "Building default version."
+          mvn $MAVEN_CLI_OPTS clean package  -DpackageScope=_${CI_PIPELINE_ID}_Build_Ordinaire -DskipTests | tee build.log}
+    
+    
   artifacts:
     paths:
       - build.log
@@ -107,15 +118,46 @@ stages:
     LOG_FILE_PATH: "sonar.log"
   <<: *envoi-splunk
 
-.deploy_job:
+.deploy_develop:
  
   stage: deploy
   script:
     - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean deploy -X -DmuleDeploy -Denv=Dev -DskipTests | tee deploy.log
+  only:
+    - Develop
+  
   artifacts:
     paths:
       - deploy.log
   variables:
     LOG_FILE_PATH: "deploy.log"
   <<: *envoi-splunk
+.deploy_Staging:
+ 
+  stage: deploy
+  script:
+    - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean deploy -X -DmuleDeploy -Denv=Staging -DskipTests | tee deploy.log
+  only:
+    - Staging
+
+  artifacts:
+    paths:
+      - deploy.log
+  variables:
+    LOG_FILE_PATH: "deploy.log"
+  <<: *envoi-splunk 
+
+.deploy_Product:
+ 
+  stage: deploy
+  script:
+    - mvn -s $CI_PROJECT_DIR/ci-settings.xml clean deploy -X -DmuleDeploy -Denv=Product -DskipTests | tee deploy.log
+  only:
+    - main 
+  artifacts:
+    paths:
+      - deploy.log
+  variables:
+    LOG_FILE_PATH: "deploy.log"
+  <<: *envoi-splunk    
 
